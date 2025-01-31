@@ -9,6 +9,9 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+#linter란?
+# 코드 스타일과 품질을 검사하여 코드에 있는 잠재적 오류
+# 스타일 위반, 비효율적 패턴 등을 알려주는 도구입니다.
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
@@ -21,6 +24,14 @@ linter:
   # `// ignore_for_file: name_of_lint` syntax on the line or in the file
   # producing the lint.
   rules:
+    # 상수로 선언 가능한 생성자에 대해 경고를 표시하지 않음으로 설정.
+    prefer_const_constructors: false
+    # 변하지 않는 변수에 대해 const로 선언하지 않아도 경고를 표시하지 않음.
+    prefer_const_declarations: false
+    # 불변 컬렉션(List, Map, Set 등)에 대해 const를 사용하지 않아도 경고를 표시하지 않음.
+    prefer_const_literals_to_create_immutables: false
+    # avoid_print: false  # Uncomment to disable the `avoid_print` rule
+    # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true  # Uncomment to enable the `prefer_single_quotes` rule
 

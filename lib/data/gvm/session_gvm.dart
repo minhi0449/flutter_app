@@ -133,6 +133,69 @@ class SessionGVM extends Notifier<SessionUser> {
   }
 
   // 로그아웃 행위
+
+  // 자동 로그인 행위
+  // 로직 정리 (단계를 정리하는 습관 기르기)
+  // 0. 예외 처리
+  // 1. 디바이스 기기에 토큰 확인
+  // 2. 디바이스 토큰 유무 확인
+  // 3. 토큰 유효성 검사
+  // 4. SessionUser 상태 갱신
+  // 5. dio 헤더에 토큰 다시 설정
+  // 6. 게시글 목록 페이지 이동 처리
+  Future<void> autoLogin() async {
+    try {
+      // 비동기 처리 ---> 코드가 내려가지 않고 완료될 때까지 대기
+      // 1. 토큰을 디바이스에서 가져오기
+      // 2. JWT 토큰 유무 확인 -> 없으면 로그인 페이지로 이동
+      String? accessToken = await secureStorge.read(key: 'accessToken');
+
+      if (accessToken == null) {
+        Navigator.popAndPushNamed(mContext, '/login');
+        return; // 실행의 제어권 반납한다.
+      }
+
+      // 토큰이 있다면 user repository
+      // 내부적으로  false
+      // "success" --> true, false 로직 설계
+      Map<String, dynamic> resBody =
+          await userRepository.loginWithToken(accessToken);
+
+      // 서버 내부적으로 오류로 판결 처리
+      // "success" --> false
+      if (!resBody['success']) {
+        // 요즘은 바로 로그인 페이지로 사용자에게 다시 로그인 시킴
+        Navigator.popAndPushNamed(mContext, '/login');
+        return;
+      }
+
+      // "success" --> true
+      // 세션 뷰모델은 화면이 파괴되더라도, 가지고 다녀야 됨,
+      // 회원정보 수정을 하더라도, 상태 갱신해야 함.
+      // 선생님 설명 : 상태 값을 변경할 때, 불변 객체를 사용하자. (= 깊은 복사 처리) 새로운 객체를 만들어서 통으로 바꾸라는 이야기
+      // 새로운 객체를 생성해서 넣자
+
+      // 다운 캐스팅
+      // 원래 이렇게 적어야 하는데 너무 복잡해서 실수할 경우가 많아서 다운캐스팅 해주기
+      resBody['response']['username'];
+      // 진짜 다운캐스팅
+      Map<String, dynamic> data = resBody['response'];
+
+      state = SessionUser(
+        id: data['id'],
+        username: data['username'],
+        accessToken: accessToken,
+        isLogin: true,
+      );
+      // 상태 변경 완료
+      // 혹시 ... dio 헤더에 accessToken 을 다시 설정하자.
+      dio.options.headers['Authorization'] = accessToken;
+    } catch (e, stackTrace) {
+      ExceptionHander.handerException('자동 로그인 중 오류 발생', stackTrace);
+      // 화면 파괴하면서 이동 처리
+      Navigator.popAndPushNamed(mContext, '/login');
+    }
+  }
 }
 
 // 창고 관리자 선언 (창고 - 뷰모델), 창고 어떤 관리해라 지정!!

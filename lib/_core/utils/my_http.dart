@@ -24,4 +24,4 @@ final dio = Dio(
 
 // 중요 데이터 보관소 (금고 생성)
 // 로컬에 민감한 데이터를 보관하는 안전한 금고 역할을 한다.
-const secureStorge = FlutterSecureStorage();
+const secureStorge = FlutterSecureStorage(); // 전역 변수로

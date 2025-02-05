@@ -12,6 +12,7 @@ double getScreenWidth(BuildContext context) {
 
 // 응용
 double getDrawerWidth(BuildContext context) {
+  // runtime 시점의 미디어쿼리의 width 크기를 들고 있다.
   return getScreenWidth(context) * 0.6;
 }
 
